@@ -1,0 +1,8 @@
+git clone https://github.com/账户/仓库
+
+cd 仓库
+修改代码
+添加文件
+#git add
+#git commit -m "xx"
+#git push 需要用户名和密码
