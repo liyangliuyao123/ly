@@ -1,0 +1,73 @@
+A && B 当A成功 执行B
+A || B 当A失败 执行B
+A ； B 执行完A再执行B
+ 
+！ 非
+[ -z ]是否空值
+ 
+
+=   	赋值
+== 	比较
+
+[  ] 比较
+
+eq  		等于 		equal
+ne  		不等于		not equal
+gt		大于		greater than
+ge		大于等于	greater than or equal
+lt		小于		less than
+le		小于等于	less than or equal
+##############################################################################
+
+for 循环
+ping
+-i 数字   间隔时间   
+-W 数字   超时
+echo -n 不换行
+echo -e extend
+函数
+0x 样式
+3x 字体色
+4x 背景色
+################################################################################
+
+字符串截取
+${}  ${变量名：起始位置：长度}  起始位置从0开始
+expr substr  expr substr “$变量名” 起始位置 长度
+cut		echo $变量名 | cut -b 起始位置-结束位置 
+
+掐头去尾
+# 掐头
+	${变量名#*关键词}
+% 去尾
+	${变量名%%关键词*}
+
+expect 自动交互
+
+发邮件(非交互)
+echo “xx” | mail -s xx root
+mail -s xx root < 文件
+mail -s xx root << EOF   EOF:end of file
+
+正则表达式
+.*   任意所有
+基本正则：兼容性好，书写麻烦
+扩展正则：兼容性差，书写简单
+
+
+sed
+第一个和最后一个对换
+sed -r 's/^(.)(.*)(.)$/\3\2\1/' tmp.txt
+将所有的大写字母加上[  ]
+sed -r 's/([A-Z])/[\1]/g'  tmp.txt
+
+
+netstat -antulp
+a  all 显示所有
+n   数字显示ip和端口
+t	显示tcp连接
+u	显示udp连接
+p	显示程序的名称
+l	仅显示当前
+
+column -t  自动对齐

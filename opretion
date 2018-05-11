@@ -1,0 +1,38 @@
+校验 
+md5sum  文件
+sha512sum  文件
+
+
+nginx      		80 端口
+php-fpm    		9000 端口
+mariadb -server	3306端口
+
+nginx 动静分离
+
+判断，如果是静态页面，则nginx直接返回页面
+如果是动态页面，则nginx先转发给9000端口（php），php执行脚本，返回给nginx，nginx返回结果给用户
+ 
+nginx 日志
+/usr/local/nginx/logs/error.log
+
+php 日志
+/var/log/php-fpm/www-error.log
+
+tailf 动态看日志
+
+                                  脚本程序
+php-----------------------------mysql
+1.启动数据库3306
+2.php必须安装扩展php-mysql
+
+tmux 分屏
+
+DAY3
+
+操作系统对能打开的最大文件数量有限制1024
+ulimit
+  Hn 硬限制
+  Sn 软限制
+
+FTP 多端口 1.传指令 2.传数据
+
