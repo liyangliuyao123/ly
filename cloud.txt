@@ -1,0 +1,99 @@
+物理机：
+
+cd /etc/sysctl.d/
+vim 70-system.conf
+#net.ipv4.ip_forward = 1
+
+cd /etc/libvirt/qemu/networks/
+cd autostart/
+rm -rf *
+修改selinux 为 disabled
+卸载掉所有带有firewall的包
+rpm -qa | grep firewall
+yum remove 卸载掉
+rpm -qa | grep -i firewall
+ifconfig
+就剩下
+enp1s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 176.121.201.109  netmask 255.255.255.0  broadcast 176.121.201.255
+        inet6 fe80::de4a:3eff:fe51:aab9  prefixlen 64  scopeid 0x20<link>
+        ether dc:4a:3e:51:aa:b9  txqueuelen 1000  (Ethernet)
+        RX packets 1593  bytes 192734 (188.2 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 310  bytes 33766 (32.9 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1  (Local Loopback)
+        RX packets 86  bytes 7104 (6.9 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 86  bytes 7104 (6.9 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+
+cd /etc/libvirt/qemu/networks/
+touch vbr.xml
+vim vbr.xml
+<network>
+  <name>vbr</name>
+  <bridge name="vbr"/>
+  <forward mode='nat'/>    //虚拟机可上网配置
+   <ip address='192.168.1.254' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.1.100' end='192.168.1.200'/>
+    </dhcp>
+  </ip>
+</network>
+
+dhcp地址必须和vbr ip地址在同网段
+
+cd /var/lib/libvirt/images/
+qemu-img create -f qcow2 node.qcow2 16G
+
+[root@room9pc01 networks]# virsh net-define vbr.xml 
+从 vbr定义网络vbr.xml
+
+[root@room9pc01 networks]# virsh net-start  vbr
+网络 vbr 已开始
+
+[root@room9pc01 networks]# virsh net-autostart vbr 
+网络vbr标记为自动启动
+
+ifconfig查看就多了
+vbr: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
+        inet 192.168.1.254  netmask 255.255.255.0  broadcast 192.168.1.255
+        ether 52:54:00:9c:db:cc  txqueuelen 1000  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+新建的虚拟机
+yum provides ifconfig	 查找装ifconfig的包
+yum provides vim           查找装vim的包		
+yum provides ip            查找装ip的包
+yum list | grep -P "^bash"
+bash-completion.noarch   可以tab的包
+ip route show 查看网关
+ip route add replace default via 网关      添加默认网关 
+
+禁用空路由 /etc/sysconfig/network
+添加 "NOZEROCONF=yes"
+配置/etc/sysconfig/grub
+在GRUB_CMDLINE_LINUX 添加
+console=tty0 console=ttyS0，115200n8
+grub2-mkconfig -o /boot/grub2/grub.cfg
+reboot
+
+创建虚拟机 node1
+1.创建虚拟机配置文件
+拷贝模版到node1.xml，修改name字段，修改磁盘文件
+2.创建虚拟机磁盘文件
+cd /var/lib/libvert/images
+qemu-img create -b node.qcow2 -f qcow2 node1.img
+3.启动虚拟机并测试
+cd /etc/libvert/qemu
+virsh define node1.xml
+virsh start node1
+virsh console node1
